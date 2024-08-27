@@ -33,46 +33,50 @@ int main() {
 }
 
 // Function to handle POST request 处理 POST 请求的函数
+
+//1.从环境变量获取POST数据长度，并判断是否小于MAX_QUERY_LENGTH，然后存入缓冲区
+//2.将请求解析为json
 void handle_post_request() {
     char query[MAX_QUERY_LENGTH];
     size_t content_length;
-    char *content_length_str = getenv("CONTENT_LENGTH");
+    char *content_length_str = getenv("CONTENT_LENGTH"); //从环境变量：CONTENT_LENGTH 获取数据长度n
 
     if (content_length_str == NULL) {
         printf("{\"error\":1,\"message\":\"Missing CONTENT_LENGTH\"}\n");
         return;
     }
 
-    content_length = (size_t)atoi(content_length_str);
+    content_length = (size_t)atoi(content_length_str); //将表示数字的字符串转换为整数
     if (content_length >= MAX_QUERY_LENGTH) {
         printf("{\"error\":1,\"message\":\"Request too large\"}\n");
         return;
     }
 
-    // Read POST data
+    // Read POST data 将标准输入的数据写入query
     fread(query, 1, content_length, stdin);
     query[content_length] = '\0'; // Null-terminate
 
     char module[50];
     char action[50];
 
-    // Parse the POST data
-    parse_post_data(query, module, action);
+    // Parse the POST data 将POST请求解析为json
+    parse_post_data(query, module, action); 
 
     // Create a JSON object for the response
     struct json_object *response_json = json_object_new_object();
 
     // Execute UCI command and get the output
+    //执行 UCI 命令并将响应填充到 JSON 对象中
     execute_uci_command(action, response_json);
 
-    // Add the module and error fields
+    // Add the module and error fields 加入数据
     json_object_object_add(response_json, "module", json_object_new_string(module));
     json_object_object_add(response_json, "error", json_object_new_int(0));
 
-    // Print the JSON response
+    // Print the JSON response 将数据转换成字符串输出
     printf("%s\n", json_object_to_json_string(response_json));
 
-    // Free the JSON object
+    // Free the JSON object 释放
     json_object_put(response_json);
 }
 
