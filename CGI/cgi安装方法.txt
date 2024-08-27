@@ -1,0 +1,13 @@
+Ubuntu上
+gcc -o name.cgi test.c  （使用json时加-ljson-c）
+
+首先在openwrt目录下的package目录下建立一个目录
+本例为：helloworld。然后在helloworld目录下建立Makefile文件和src目录。
+其中制定安装路径为web服务的CGI路径。
+src目录下放入自己的程序及Makefile
+
+使用openwrt编译好后，把ipa通过scp上传到路由器下（或直接编译到固件中），安装：
+opkg install helloworld_1_x86.ipk
+
+之后就会在/cgi-bin下看见helloworld程序。调用程序能正常输出网页：
+root@OpenWrt:~/cgi-bin# ./helloworld 

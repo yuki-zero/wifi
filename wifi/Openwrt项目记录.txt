@@ -39,6 +39,11 @@ Openwrt固件编译过程
 linux中make menuconfig 进入后./查找位置 然后按 空格进行选择*
 选择后 find ./ -name ‘名字*’名字查找在哪儿
 make ./目录/{clean,prepare,compile} V=s 进行编译 一般选compile
+
+make时openwrt 缺少 libc.so.6 libm.so.6 libpthread.so.0
+vim staging_dir/target-mips_24kc_musl/pkginfo/libc.provides
+加入libc.so.6  libm.so.6 libpthread.so.0
+
 编译完成后去bin目录下查找
 然后连接电脑和板子的网络进行复制
 opkg install进行安装
@@ -50,3 +55,53 @@ opkg install进行安装
 make menuconfig 查找helloworld勾选上 //Makefile里定义了位置
 然后后面步骤一样了
 bin/ipq/packages/base/helloworld_1_ipq.ipk
+
+Makefile怎么写：
+https://www.cnblogs.com/liushannet/p/3895092.html
+
+
+//外层：
+include $(TOPDIR)/rules.mk
+include $(INCLUDE_DIR)/kernel.mk
+#你的包名
+PKG_NAME:=sc
+PKG_RELEASE:=1
+PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
+include $(INCLUDE_DIR)/package.mk
+#包信息
+define Package/sc
+	#下面两个编译时候编译界面上用到的分类
+    SECTION:=utils 
+    CATEGORY:=Utilities
+    TITLE:=certain information sc customer
+	#这加依赖库
+    DEPENDS:=+libpthread +libpcap 
+endef
+
+define Package/sc/description
+	#包介绍
+    If you can't figure out what this program does, you're probably
+    brain-dead and need immediate medical attention.
+endef
+
+define Build/Prepare
+    mkdir -p $(PKG_BUILD_DIR)
+    $(CP) ./src/* $(PKG_BUILD_DIR)/
+endef
+#包安装执行
+define Package/sc/install
+    $(INSTALL_DIR) $(1)/usr/bin
+    $(INSTALL_BIN) $(PKG_BUILD_DIR)/sc $(1)/usr/bin/
+endef
+
+$(eval $(call BuildPackage,sc))
+
+//内层就只进行编译
+sc:sc.o
+	$(CC) sc.o -o sc -lpthread -lpcap
+sc.o:sc.c sc.h
+	$(CC) -c sc.c
+clean:
+	rm -rf *.o sc
+
+

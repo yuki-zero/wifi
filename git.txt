@@ -1,0 +1,22 @@
+git status //查看哪些文件进行了修改
+git diff +文件 //查看修改了什么
+git add +文件 //提交
+
+git commit -m ‘修改信息注释’
+git log //提交的历史记录
+
+git push //上传
+git push origin master:main
+
+git reset + log的commit  回退到某个时间 
+git revert +  log的commit  创建一个新的版本
+这个版本的内容与我们要回退到的目标版本一样，但是HEAD指针是指向这个新生成的版本，而不是目标版本。
+
+
+
+git rm -r --cached . 清除缓冲区
+git diff --cached 查看
+git gc --prune=now --aggressive 回收垃圾
+
+
+git push --set-upstream origin master //将本地master连接到远程
