@@ -1,0 +1,104 @@
+1. 搭建编译环境
+    1) 安装Linux系统(虚拟机和PC都可以)，使用ubuntu-16.04.7-desktop-amd64.iso镜像
+    2) 安装系统工具包
+       # sudo apt-get install gcc g++ binutils patch bzip2 flex make \
+            gettext pkg-config unzip zlib1g-dev libc6-dev subversion libncurses5-dev gawk sharutils \
+            curl libxml-parser-perl python-yaml ocaml-nox ocaml ocaml-findlib libssl-dev libfdt-dev
+       # sudo apt-get install device-tree-compiler u-boot-tools quilt
+    
+2. 下载高通源代码
+    # sudo apt-get install vim git
+    # mkdir ~/bin
+    # cd ~/bin
+    # git clone https://git.codelinaro.org/clo/la/tools/repo.git
+    # cd ~
+    # mkdir wifi5_router
+    # cd wifi5_router
+    # ~/bin/repo/repo init -u https://git.codelinaro.org/clo/qsdk/releases/manifest/qstak -b release -m AU_LINUX_QSDK_NHSS.QSDK.11.4_TARGET_ALL.11.4.6938.7070.xml --repo-url=https://git.codelinaro.org/clo/la/tools/repo.git --repo-branch=qc-stable --no-clone-bundle
+    # ~/bin/repo/repo sync -j8 --no-tags
+    
+3. 编译SDK
+    # cd qsdk
+    # git clone https://github.com/nicochidt/openwrt-packages dl
+    # ./scripts/feeds update -a
+    # ./scripts/feeds install -a -f
+
+    # cp qca/configs/qsdk/ipq_premium.config .config
+    # make defconfig
+    # make V=s
+    
+4. 代码提交, git commit template
+   https://www.cnblogs.com/yeduweichengzhaoyu/p/14330682.html
+   
+5. 站立会
+   1) 时间: 9:10
+   
+6. 编码规范，遵循Linux编码规范
+   https://www.kernel.org/doc/html/v4.10/process/coding-style.html
+   
+7. 研发流程: 需求分析(已有)-->需求理解及确认-->系统设计(含概要设计)-->详细设计(新开发的功能)-->编码-->测试-->验收
+   模板: https://github.com/zhaiguangtao/smart-parent/tree/master/docs/rules/%E4%BA%A7%E5%93%81%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/%E6%A8%A1%E6%9D%BFv2
+   
+8. openwrt学习资料: 
+   https://togetek-docs.readthedocs.io/zh/latest/2.hardware/1.%E4%B8%80%E8%B5%B7%E5%AD%A6OpenWrt(%E5%9F%BA%E7%A1%80%E7%AF%87)/index.html#
+   https://openwrt-nctu.gitbook.io/project
+
+9. openwrt helloworld package sample 
+https://zhuanlan.zhihu.com/p/663797787
+
+# mkdir package/helloworld
+# cd package/helloworld/
+# mkdir src
+# cd src/
+# vim helloworld.c
+# vim makefile
+# cd ../
+# vim Makefile
+# make menuconfig
+# make ./package/helloworld/{clean,prepare,compile} V=s
+bin/ipq/./packages/base/helloworld_1.0-1_ipq.ipk
+
+在板子上: 
+# cd /tmp/
+# tftp -g -r helloworld_1.0-1_ipq.ipk x.x.x.x
+# opkg install helloworld_1.0-1_ipq.ipk
+# helloworld
+
+
+https://bitbucket.org/phjounin/tftpd64/wiki/Download%20Tftpd64
+
+1. luci开发:
+    https://zhuanlan.zhihu.com/p/670568377
+    https://blog.csdn.net/u011029104/article/details/135587278
+
+2. led 控制
+    https://blog.csdn.net/weixin_48065421/article/details/133861800
+    /sys/class/leds/ln1/brightness 
+    /sys/class/leds/ln2/brightness
+    /sys/class/leds/ln3/brightness  
+
+10. LED的行为定义:
+      1）网线拔掉：红色呼吸灯；
+      2）网线插上：但没有拿到IP地址，蓝色闪烁；
+      3）网线插上：拿到IP地址，蓝色常量；
+      4）出现故障：红色常量；
+      5）升级及安装ipk：红蓝交替；
+
+11. wifi页面加密算法WPA2不显示问题, 增加 hwtype == "qcawificfg80211"
+root@OpenWrt:/usr/lib/lua/luci/model# grep -nr qcawifi ./
+./cbi/admin_network/wifi.lua:251:------------------- qcawifi Device ------------------
+./cbi/admin_network/wifi.lua:253:if hwtype == "qcawifi" or hwtype == "qcawificfg80211" then
+./cbi/admin_network/wifi.lua:516: -------------------- qcawifi Interface ----------------------
+./cbi/admin_network/wifi.lua:517:if hwtype == "qcawifi" or hwtype == "qcawificfg80211" then
+./cbi/admin_network/wifi.lua:788:if hwtype == "atheros" or hwtype == "qcawifi" or hwtype == "qcawificfg80211" or hwtype == "mac80211" or hwtype == "prism2" then
+./cbi/admin_network/wifi.lua:1061:if hwtype == "atheros" or hwtype == "qcawifi" or hwtype == "qcawificfg80211" or hwtype == "" or hwtype == "mac80211" or hwtype == "prism2" then
+
+12. 所有的config选项在qca/configs/qsdk/ipq_premium.config 这个文件里面
+
+13. Prepare Test DUT(device under test):
+     0）jffs2reset -y && sync
+     1）找到功能相关的ipk
+     2)  打包
+     3）tftp命令下载到DUT的tmp目录
+     4) 在DUT上解压
+     5）使用opkg命令安装

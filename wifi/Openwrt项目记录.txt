@@ -1,0 +1,52 @@
+Openwrt目录结构
+config 系统配置文件
+include .mk文件存放的地方
+package 存放软件包额地方
+target 定义了firmware和kernel如何编译成二进制文件的过程，每个平台的编译过程不同
+script 存放脚本的文件 
+ 	feeds 下载软件包的脚本文件，如要下载其他的软件包，需打开源码根目录下面的feeds.conf.default文件，去掉相应软件包前面的#号
+toolchain 交叉编译链软件包
+tools 包含了编译时需要用到的工具的获取和编译命令  
+build_dir 编译时在其子文件夹中展开软件包进行编译
+staging_dir 子目录与build_dir相同，用于存放build_dir展开编译的结果
+bin 编译完成的.bin和.ipk二进制文件保存的地方
+dl 编译过程中下载的源代码包
+tmp 编译过程中产生的临时文件
+logs 存放编译时产生的错误信息
+
+Openwrt固件编译过程
+	配置  配置工具模块（make menuconfig）
+	下载  下载需要的软件代码压缩包
+	编译工具  对tools和toolchain在编译时需要使用到的工具进行编译
+	编译ipk
+	编译内核
+	固件打包 将文件系统和内核链接制成镜像文件
+
+单编译某个组件
+	内核模块 make package/kernel/linux/compile
+	内核  make target/linux/compile
+	软件包  make package/xxx/{clean,prepare,compile} V=s  compile选项是编译
+
+嵌入式Linux组件
+	uboot 在设备启动时初始化硬件并加载操作系统或其他程序
+	kernel  内核是在硬件和软件之间的抽象层，主要由内存管理、进程管理、文件系统、设备管理和网络管理几部分组成。
+	rootfs 根文件系统
+	config data 保存用户配置的各种信息
+
+
+
+安装包到板子上
+linux中make menuconfig 进入后./查找位置 然后按 空格进行选择*
+选择后 find ./ -name ‘名字*’名字查找在哪儿
+make ./目录/{clean,prepare,compile} V=s 进行编译 一般选compile
+编译完成后去bin目录下查找
+然后连接电脑和板子的网络进行复制
+opkg install进行安装
+
+自己编写一个helloworld 
+参考  https://blog.csdn.net/lfq88/article/details/116562974
+写helloworld.c 再在同一目录下写编译.c的Makefile
+然后在上一级目录下写helloworld文件的Makefile
+make menuconfig 查找helloworld勾选上 //Makefile里定义了位置
+然后后面步骤一样了
+bin/ipq/packages/base/helloworld_1_ipq.ipk

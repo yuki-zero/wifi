@@ -1,0 +1,17 @@
+default_hold=8
+
+if [ "$ACTION" = "pressed" ] && [ "$BUTTON" = "wps" ]; then
+    echo "WPS button pressed" > /dev/console
+    echo "Timestamp recorded: $(date)" > /dev/console
+    # Record the press time
+    date +%s > /tmp/wps_pressed_time
+    # Start the background script to monitor for long press
+    /etc/check_wps_hold.sh $default_hold &
+fi
+
+if [ "$ACTION" = "released" -a "$BUTTON" = "wps" ]; then
+        if [ "$SEEN" -lt $default_hold ]; then
+                # Remove the press time record file
+                rm -f /tmp/wps_pressed_time
+        fi
+fi

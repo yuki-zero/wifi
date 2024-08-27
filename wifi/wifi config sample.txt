@@ -1,0 +1,19 @@
+802.11ac WPA2-PSK 
+uci set wireless.wifi0=wifi-device
+ uci set wireless.wifi0.type=qcawifi
+ uci set wireless.wifi0.macaddr=00:60:02:00:c9:c9
+ uci set wireless.wifi0.hwmode=11ac
+ uci set wireless.wifi0.disabled=0
+ uci set wireless.wifi0.htmode=HT80
+ uci set wireless.wifi0.channel=100
+ uci set wireless.wifi0.txchainmask=15
+ uci set wireless.wifi0.rxchainmask=15
+ uci set wireless.wifi0.mode=ap
+ uci set wireless.@wifi-iface[0]=wifi-iface
+ uci set wireless.@wifi-iface[0].device=wifi0
+uci set wireless.@wifi-iface[0].network=lan
+ uci set wireless.@wifi-iface[0].mode=ap
+ uci set wireless.@wifi-iface[0].ssid=5g_wpa2
+ uci set wireless.@wifi-iface[0].encryption=psk2+ccmp
+ uci set wireless.@wifi-iface[0].key=12345678
+ uci commit wireless

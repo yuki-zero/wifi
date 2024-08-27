@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Get the hold time from the command line argument, default to 8 seconds
+HOLD_TIME=${1:-8}
+
+# Continuously check until the button is released
+while [ -f /tmp/wps_pressed_time ]; do
+    # Get the current time and the time when the button was pressed
+    current_time=$(date +%s)
+    pressed_time=$(cat /tmp/wps_pressed_time)
+
+    # Calculate the hold duration
+    hold_time=$((current_time - pressed_time))
+
+    if [ "$hold_time" -ge "$HOLD_TIME" ]; then
+        echo "WPS button held long enough, resetting..." > /dev/console
+        # Remove the press time record file
+        rm -f /tmp/wps_pressed_time
+        # to factory reset
+        #reboot
+        # Exit the background script
+        exit 0
+    fi
+
+    # Check every second
+    sleep 1
+done
+
+# If the button was released before the hold duration, print a message and exit
+echo "WPS button not held long enough" > /dev/console
+exit 0
+

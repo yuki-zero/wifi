@@ -1,0 +1,7 @@
+1.使用git维护代码
+代码提交, git commit template
+   https://www.cnblogs.com/yeduweichengzhaoyu/p/14330682.html
+编码规范，遵循Linux编码规范
+   https://www.kernel.org/doc/html/v4.10/process/coding-style.html
+2.有一份接口文档(LAN、WAN、WIFI、device)
+3.使用postman测试通过
