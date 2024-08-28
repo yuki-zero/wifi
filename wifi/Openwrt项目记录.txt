@@ -33,7 +33,20 @@ Openwrt固件编译过程
 	rootfs 根文件系统
 	config data 保存用户配置的各种信息
 
+网络相关
 
+lighttpd  ：/etc/lighttpd/lighttpd.conf
+重启网络 /etc/init.d/network restart
+重启wifi  wifi
+ps |grep lighttp
+vi /etc/lighttpd/lighttpd.conf
+ps |grep uhttp
+/etc/init.d/lighttpd restart
+/etc/init.d/uhttpd restart
+
+网络配置 
+/etc/config/network
+/etc/config/dhcp
 
 安装包到板子上
 linux中make menuconfig 进入后./查找位置 然后按 空格进行选择*
