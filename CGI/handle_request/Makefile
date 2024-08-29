@@ -27,6 +27,7 @@ define Package/handle_request/install
     echo "Installing CGI"
 	$(INSTALL_DIR) $(1)/www/cgi-bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/handle_request $(1)/www/cgi-bin/handle_request.cgi
+	
 endef
 
 # Define the source directory for your build
