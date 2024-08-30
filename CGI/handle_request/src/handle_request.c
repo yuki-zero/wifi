@@ -446,6 +446,56 @@ void handle_post()
     {
         char cmd[512] = {0};
         int error = 0;
+
+        char* wifi_device = json_get_string_value_by_field(myjson,"wifi_device");
+        if(wifi_device == NULL)
+        {
+            error++;
+        }
+        char* wifi_network = json_get_string_value_by_field(myjson,"wifi_network");
+        if(wifi_network == NULL)
+        {
+            error++;
+        }
+        char* wifi_mode = json_get_string_value_by_field(myjson,"wifi_mode");
+        if(wifi_mode == NULL)
+        {
+            error++;
+        }
+        char* wifi_ssid = json_get_string_value_by_field(myjson,"wifi_ssid");
+        if(wifi_ssid == NULL)
+        {
+            error++;
+        }
+        char* wifi_key = json_get_string_value_by_field(myjson,"wifi_key");
+        if(wifi_key == NULL)
+        {
+            error++;
+        }
+
+
+        sprintf(cmd,"uci set wireless.wla.device=%s", wifi_device);
+        system(cmd);
+
+        memset(cmd,0,512);
+        sprintf(cmd,"uci set wireless.wla.network=%s", wifi_network);
+        system(cmd);
+
+        memset(cmd,0,512);
+        sprintf(cmd,"uci set wireless.wla.mode=%s", wifi_mode);
+        system(cmd);
+
+        memset(cmd,0,512);
+        sprintf(cmd,"uci set wireless.wla.ssid=%s", wifi_ssid);
+        system(cmd);
+
+        memset(cmd,0,512);
+        sprintf(cmd,"uci set wireless.wla.key=%s", wifi_key);
+        system(cmd);
+
+        system("uci commit");
+        printf("{\"error\":%d}\n",error);
+        system("/etc/init.d/network restart");
     }
     else
     {
